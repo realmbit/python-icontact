@@ -14,11 +14,15 @@
 try:
     from django.utils import simplejson
 except ImportError:
-    import simplejson
-import httplib
+    try:
+        import simplejson
+    except ImportError:
+        import json as simplejson
+
+import http.client
 import urllib
-import urllib2
-import urlparse
+import urllib.request as urllib2
+from urllib.parse import urlparse
 import logging
 
 from datetime import tzinfo, timedelta
@@ -158,7 +162,7 @@ class IContactClient(object):
             # Perform a PUT request
             self.log.debug(u'%s Request %s body: %s' % (method, url, data))
             scheme, host, path, params, query, fragment = urlparse.urlparse(url)
-            conn = httplib.HTTPSConnection(host, 443)
+            conn = http.client.HTTPSConnection(host, 443)
             conn.request(method.upper(), path , data, headers)
             response = conn.getresponse()
             self.log.debug("response.status=%s msg=%s headers=%s" %
